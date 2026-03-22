@@ -8,18 +8,17 @@ Gem::Specification.new do |spec|
   spec.version       = OOXL::VERSION
   spec.authors       = ["James Mones"]
   spec.email         = ["bajong009@gmail.com"]
-  spec.summary       = %q{OOXL Excel - Parse Excel Spreadsheets (xlsx, xlsm).}
-  spec.description   = %q{A Ruby spreadsheet parser for Excel (xlsx, xlsm).}
+  spec.summary       = %q{Lightweight Ruby parser for Excel spreadsheets (xlsx, xlsm).}
+  spec.description   = %q{Parse Excel spreadsheets with a simple API. Read cell values, formulas, styles, comments, data validations, named ranges, and merged cells from xlsx and xlsm files. Supports streaming from strings and IO objects with lazy row loading for large files.}
   spec.homepage      = "https://github.com/halcjames/ooxl"
   spec.license       = "MIT"
 
-  # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
-  # to allow pushing to a single host or delete this section to allow pushing to any host.
-  # if spec.respond_to?(:metadata)
-  #   spec.metadata['allowed_push_host'] = "TODO: Set to 'http://mygemserver.com'"
-  # else
-  #   raise "RubyGems 2.0 or newer is required to protect against public gem pushes."
-  # end
+  spec.metadata = {
+    "source_code_uri"   => "https://github.com/halcjames/ooxl",
+    "bug_tracker_uri"   => "https://github.com/halcjames/ooxl/issues",
+    "changelog_uri"     => "https://github.com/halcjames/ooxl/blob/master/CHANGELOG.md",
+    "rubygems_mfa_required" => "true"
+  }
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   spec.bindir        = "exe"

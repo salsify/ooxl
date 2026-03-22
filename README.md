@@ -12,7 +12,7 @@ gem 'ooxl'
 
 And then execute:
 
-    $ bundle
+    $ bundle install
 
 Or install it yourself as:
 
@@ -20,131 +20,171 @@ Or install it yourself as:
 
 ## Usage
 
-### reading an excel spreadsheet:
-```
+### Opening a Spreadsheet
+
+```ruby
+# From a file path
 ooxl = OOXL.new('example.xlsx')
-
-or
-
+# or
 ooxl = OOXL.open('example.xlsx')
+
+# From a string or IO stream (e.g. uploaded file, HTTP response)
+ooxl = OOXL.parse(file_contents)
 ```
 
-### Fetching all sheets:
+### Options
+
+```ruby
+ooxl = OOXL.open('example.xlsx',
+  skip_hidden_sheets: true,  # exclude hidden sheets from iteration
+  padded_rows: true,         # fill gaps in row indices with empty rows
+  padded_cells: true         # fill gaps in columns with blank cells
+)
 ```
-ooxl.sheets # ['Test Sheet 1', 'Test Sheet 2']
+
+### Sheets
+
+```ruby
+ooxl.sheets                     # => ["Sheet 1", "Sheet 2"]
+ooxl.sheets(skip_hidden: true)  # exclude hidden sheets
+
+sheet = ooxl.sheet('Sheet 1')
+# or
+sheet = ooxl['Sheet 1']
 ```
 
-### Accessing Rows and Cells
-```
-sheet = ooxl.sheet('Test Sheet 1')
+### Rows and Cells
 
-# Rows
-sheet.rows[0] # Access the first row
-sheet[0] # short version
+```ruby
+sheet = ooxl['Sheet 1']
 
-# Cells
-sheet.rows[0].cells # access the cells of the first row
-sheet[0].cells # short version
+# Access rows by index
+sheet.rows        # all rows
+sheet.rows[0]     # first row
+sheet[0]          # shorthand
 
-sheet.rows[0].cells[0] # Access the first cell of the row
-sheet[0][0] # short version
+# Access cells
+sheet[0].cells    # all cells in the first row
+sheet[0][0]       # first cell of the first row
+sheet[0][0].value # cell value
 
-sheet.rows[0].cells[0].value # Access cell value
-sheet[0][0].value# short version
-
-# Fetch cell value using the short versions
-ooxl['Test Sheet 1'][0][0].value
-
-# fetching the cell directly
-ooxl['Test Sheet 1'].cell('C1')
-
-# Detecting merged cell
-ooxl['Test Sheet 1'].in_merged_cells?('C1') # true/false
+# Access a cell directly by reference
+cell = sheet.cell('C1')
+cell.value    # => "some value"
+cell.column   # => "C"
+cell.row      # => "1"
+cell.type     # => :string, :number, :boolean, :date, :formula, :inline_str
+cell.formula  # => formula string, or nil
 ```
 
 ### Iteration
-```
-ooxl.sheet('Test Sheet 1').each do |row|
-  row.each_with_index do |cell, cell_index|
-    # do something here..
+
+```ruby
+# Iterate over rows in a sheet
+ooxl['Sheet 1'].each do |row|
+  row.each do |cell|
+    puts cell.value
   end
 end
 
+# Iterate over all sheets
 ooxl.each do |sheet|
   sheet.each do |row|
     row.each do |cell|
-      # do something here...
+      puts cell.value
     end
   end
 end
 ```
 
-### Fetching Columns
-```
-# Fetch all columns
-ooxl.sheet('Test Sheet 1').columns
+### Cell Ranges and Named Ranges
 
-# Checking if the column is hidden
-ooxl.sheet('Test Sheet 1').column(1).hidden? # column index
-ooxl.sheet('Test Sheet 1').column('A').hidden? # column letter
+```ruby
+# Named range
+ooxl.named_range('my_named_range') # => ["value1", "value2", "value3"]
+
+# Cell range (column)
+ooxl['Lists!A1:A6']   # => ["1", "2", "3", "4", "5", "6"]
+
+# Single cell
+ooxl['Lists!A1']       # => ["1"]
+
+# Rectangle (returns 2D array)
+ooxl['Lists!A1:B2']   # => [["1", "2"], ["3", "4"]]
+
+# Entire column
+ooxl['Lists!A:A']     # => ["1", "2", "3", "4", "5", "6"]
 ```
 
-### Fetching Styles
+### Columns
+
+```ruby
+sheet = ooxl['Sheet 1']
+
+sheet.columns          # all column definitions
+sheet.column('A')      # by letter
+sheet.column(1)        # by index
+sheet.column('A').hidden?
+sheet.column('A').width
 ```
+
+### Merged Cells
+
+```ruby
+sheet.in_merged_cells?('C1') # => true / false
+```
+
+### Styles
+
+```ruby
 # Font
-font_object = ooxl.sheet('Test Sheet 1').font('A1')
-font_object.bold? # false
-font_object.name # Arial
-font_object.rgb_color # FFE10000
-font_object.size # 8
+font = ooxl['Sheet 1'].font('A1')
+font.name      # => "Arial"
+font.size      # => "8"
+font.rgb_color # => "FFE10000"
+font.bold?     # => false
 
-# Cell Fill
-fill_object = ooxl.sheet('Test Sheet 1').fill('A1')
-fill_object.bg_color # FFE10000
-fill_object.fg_color # FFE10000
+# Cell fill
+fill = ooxl['Sheet 1'].fill('A1')
+fill.pattern_type # => "solid"
+fill.fg_color     # => "FFE10000"
+fill.bg_color     # => "FFE10000"
 ```
-### Fetching Data from named/cell range
+
+### Data Validations
+
+```ruby
+# All validations on a sheet
+validations = ooxl['Sheet 1'].data_validations
+
+# Validation for a specific cell
+validation = ooxl['Input Sheet'].data_validation('D4')
+validation.type    # => "textLength"
+validation.formula # => "20"
+validation.prompt  # => "Sample Validation Message"
 ```
-# named range
-ooxl.named_range('my_named_range') # ['value' 'from', 'range']
 
-# cell range
-ooxml['Lists'!$A$1:$A$6] # ['1','2','3','4','5','6']
+### Comments
 
-# or
-ooxml['Lists'!A1:A6] # ['1','2','3','4','5','6']
-
-# or loading a single value
-ooxml['Lists'!A1] # ['1']
-
-# or loading a box type values
-ooxml['Lists!A1:B2'] # [['1', '2'], ['2','3']]
-
-# loading all values of a column
-ooxml['Lists!A:A'] # ['1', '2', '3', '4', '5', '6']
-
-
-
-```
-### Fetching Data Validation
-```
-# All Validations
-data_validations = ooxl.sheet('Test Sheet 1').data_validations
-
-# Specific validation for cell
-data_validation = ooxml.sheet('Input Sheet').data_validation('D4')
-
-data_validation.prompt # "Sample Validation Message"
-data_validation.formula # 20
-data_validation.type #textLength
-
+```ruby
+sheet = ooxl['Sheet 1']
+sheet.comment('A1') # => comment text, or nil
 ```
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+```bash
+# Install dependencies
+bin/setup
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+# Run the test suite
+bundle exec rake spec
+
+# Open an interactive console
+bin/console
+```
+
+CI runs automatically via GitHub Actions on push and pull requests against `master`, testing Ruby 3.0 through 3.3.
 
 ## Contributing
 

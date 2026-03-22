@@ -1,6 +1,6 @@
 # OOXL
 
-TODO: Description
+A lightweight Ruby library for parsing Excel spreadsheets (`.xlsx`, `.xlsm`). Extract sheet data, cell values, formulas, styles, comments, data validations, and named ranges with a simple API.
 
 ## Installation
 
@@ -149,3 +149,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/halcjames/ooxl.
+
+## License
+
+This gem is available as open source under the terms of the [MIT License](LICENSE.txt).

@@ -1,8 +1,9 @@
 class OOXL
   include Enumerable
   include ListHelper
+
   attr_reader :filename
-  
+
   def initialize(filepath = nil, contents: nil, **options)
     @workbook = nil
     @sheets = {}
@@ -23,18 +24,19 @@ class OOXL
     end
   end
 
-  def self.open(spreadsheet_filepath, options={})
+  def self.open(spreadsheet_filepath, options = {})
     new(spreadsheet_filepath, **options)
   end
 
-  def self.parse(spreadsheet_contents, options={})
+  def self.parse(spreadsheet_contents, options = {})
     spreadsheet_contents.force_encoding('ASCII-8BIT') if spreadsheet_contents.respond_to?(:force_encoding)
     new(nil, contents: spreadsheet_contents, **options)
   end
 
   def sheets(skip_hidden: false)
     @workbook.sheets.map do |sheet|
-      next if sheet[:state] != 'visible' &&  (@options[:skip_hidden_sheets] || skip_hidden)
+      next if sheet[:state] != 'visible' && (@options[:skip_hidden_sheets] || skip_hidden)
+
       sheet[:name]
     end.compact
   end
@@ -75,14 +77,14 @@ class OOXL
   end
 
   def table(name)
-    @tables.find { |tbl| tbl.name == name}
+    @tables.find { |tbl| tbl.name == name }
   end
 
   def load_cell_range(range_text)
     # get the sheet name => 'Lists'
-    sheet_name = range_text.gsub(/[\$\']/, '').scan(/^[^!]*/).first
+    sheet_name = range_text.gsub(/[$']/, '').scan(/^[^!]*/).first
     # fetch the cell range => '$A$1:$A$6'
-    cell_range = range_text.gsub(/\$/, '').scan(/(?<=!).+/).first
+    cell_range = range_text.gsub('$', '').scan(/(?<=!).+/).first
     # get the sheet object and fetch the cells in range
     sheet(sheet_name).list_values_from_cell_range(cell_range)
   end
@@ -105,29 +107,27 @@ class OOXL
     shared_strings = []
     spreadsheet_zip.each do |entry|
       case entry.name
-      when /xl\/worksheets\/sheet(\d+)?\.xml/
-        sheet_id = entry.name.scan(/xl\/worksheets\/sheet(\d+)?\.xml/).flatten.first
+      when %r{xl/worksheets/sheet(\d+)?\.xml}
+        sheet_id = entry.name.scan(%r{xl/worksheets/sheet(\d+)?\.xml}).flatten.first
         @sheets[sheet_id] = OOXL::Sheet.new(entry.get_input_stream.read, shared_strings, @options)
-      when /xl\/styles\.xml/
+      when %r{xl/styles\.xml}
         @styles = OOXL::Styles.load_from_stream(entry.get_input_stream.read)
-      when /xl\/comments(\d+)?\.xml/
-        comment_id = entry.name.scan(/xl\/comments(\d+)\.xml/).flatten.first
+      when %r{xl/comments(\d+)?\.xml}
+        comment_id = entry.name.scan(%r{xl/comments(\d+)\.xml}).flatten.first
         @comments[comment_id] = OOXL::Comments.load_from_stream(entry.get_input_stream.read)
-      when "xl/sharedStrings.xml"
+      when 'xl/sharedStrings.xml'
         Nokogiri.XML(entry.get_input_stream.read).remove_namespaces!.xpath('sst/si').each do |shared_string_node|
-          shared_strings << shared_string_node.xpath('r/t|t').map { |value_node| value_node.text}.join('')
+          shared_strings << shared_string_node.xpath('r/t|t').map(&:text).join
         end
-      when /xl\/tables\/.*?/i
+      when %r{xl/tables/.*?}i
         @tables << OOXL::Table.new(entry.get_input_stream.read)
-      when "xl/workbook.xml"
+      when 'xl/workbook.xml'
         @workbook = OOXL::Workbook.load_from_stream(entry.get_input_stream.read)
-      when /xl\/worksheets\/_rels\/sheet\d+\.xml\.rels/
+      when %r{xl/worksheets/_rels/sheet\d+\.xml\.rels}
         sheet_id = entry.name.scan(/sheet(\d+)/).flatten.first
         @sheet_relationships[sheet_id] = Relationships.new(entry.get_input_stream.read)
-      when /xl\/_rels\/workbook\.xml\.rels/
+      when %r{xl/_rels/workbook\.xml\.rels}
         @workbook_relationships = Relationships.new(entry.get_input_stream.read)
-      else
-        # unsupported for now..
       end
     end
   end

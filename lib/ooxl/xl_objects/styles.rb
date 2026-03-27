@@ -5,8 +5,9 @@ require_relative 'number_formatting'
 class OOXL
   class Styles
     attr_accessor :fonts, :fills, :number_formats, :cell_style_xfs
+
     def initialize(**attrs)
-      attrs.each { |property, value| send("#{property}=", value)}
+      attrs.each { |property, value| send("#{property}=", value) }
     end
 
     def by_id(id)
@@ -27,7 +28,7 @@ class OOXL
     end
 
     def number_formats_by_index(number_format_index)
-      @number_formats.find { |number_format| number_format.id == number_format_index.to_s}.try(:code)
+      @number_formats.find { |number_format| number_format.id == number_format_index.to_s }.try(:code)
     end
 
     def self.load_from_stream(xml_stream)
@@ -38,13 +39,13 @@ class OOXL
       # This element contains the master formatting records (xf) which
       # define the formatting applied to cells in this workbook.
       # link: https://msdn.microsoft.com/en-us/library/documentformat.openxml.spreadsheet.cellformats(v=office.14).aspx
-      cell_style_xfs =  style_doc.xpath('//cellXfs/xf')
+      cell_style_xfs = style_doc.xpath('//cellXfs/xf')
 
-      self.new(
-        fonts: fonts.map { |font_node| Font.load_from_node(font_node)},
-        fills: fills.map { |fill_node| Fill.load_from_node(fill_node) if fill_node.to_s.include?('patternFill')},
+      new(
+        fonts: fonts.map { |font_node| Font.load_from_node(font_node) },
+        fills: fills.map { |fill_node| Fill.load_from_node(fill_node) if fill_node.to_s.include?('patternFill') },
         number_formats: number_formats.map { |num_fmt_node| NumberFormatting.load_from_node(num_fmt_node) },
-        cell_style_xfs: cell_style_xfs.map { |cell_style_xfs_node| CellStyleReference.load_from_node(cell_style_xfs_node)}
+        cell_style_xfs: cell_style_xfs.map { |cell_style_xfs_node| CellStyleReference.load_from_node(cell_style_xfs_node) },
       )
     end
   end

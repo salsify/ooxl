@@ -37,57 +37,47 @@ describe OOXL::RowCache do
     Nokogiri.XML(raw).remove_namespaces!
   end
 
-  let(:row_cache) { OOXL::RowCache.new(sheet_xml, []) }
+  let(:row_cache) { described_class.new(sheet_xml, []) }
 
   before do
     allow(OOXL::Row).to receive(:load_from_node).and_call_original
   end
 
-  it "loads the rows" do
+  it 'loads the rows' do
     expect(row_cache.rows.count).to eq(2)
     expect(OOXL::Row).to have_received(:load_from_node).twice
     expect(row_cache[2]['B2']).to be_a(OOXL::Cell)
   end
 
-  describe "#row" do
-    it "loads only as many rows as necessary" do
+  describe '#row' do
+    it 'loads only as many rows as necessary' do
       row_cache.row(1)
       expect(OOXL::Row).to have_received(:load_from_node).once
     end
 
-    it "loads more rows on subsequent calls" do
+    it 'loads more rows on subsequent calls' do
       row_cache.row(1)
       row_cache.row(2)
       expect(OOXL::Row).to have_received(:load_from_node).twice
     end
   end
 
-  describe "#each" do
-    it "loads only as many rows as necessary" do
-      row_cache.each do |_row|
-        break
-      end
+  describe '#each' do
+    it 'loads only as many rows as necessary' do
+      row_cache.each { |_row| break } # rubocop:disable Lint/UnreachableLoop
       expect(OOXL::Row).to have_received(:load_from_node).once
     end
 
     it "still loads only the first row when it's requested more times" do
-      row_cache.each do |_row|
-        break
-      end
-
-      row_cache.each do |_row|
-        break
-      end
-
+      row_cache.each { |_row| break } # rubocop:disable Lint/UnreachableLoop
+      row_cache.each { |_row| break } # rubocop:disable Lint/UnreachableLoop,Style/CombinableLoops
       row_cache.row(1)
 
       expect(OOXL::Row).to have_received(:load_from_node).once
     end
 
-    it "loads more rows on subsequent calls" do
-      row_cache.each do |_row|
-        break
-      end
+    it 'loads more rows on subsequent calls' do
+      row_cache.each { |_row| break } # rubocop:disable Lint/UnreachableLoop
 
       row_cache.each do
         # nothing
@@ -96,25 +86,13 @@ describe OOXL::RowCache do
       expect(OOXL::Row).to have_received(:load_from_node).twice
     end
 
-    it "loads more rows on subsequent calls" do
-      row_cache.each do |_row|
-        break
-      end
-
-      row_cache.each do
-        # nothing
-      end
-
-      expect(OOXL::Row).to have_received(:load_from_node).twice
-    end
-
-    context "padded rows" do
+    context 'padded rows' do
       let(:second_row_id) { 3 }
-      let(:row_cache) { OOXL::RowCache.new(sheet_xml, [], padded_rows: true) }
+      let(:row_cache) { described_class.new(sheet_xml, [], padded_rows: true) }
 
-      it "fills blanks with empty rows" do
-        ids = row_cache.map { |row| row.id }
-        expect(ids).to eq(['1', '2', '3'])
+      it 'fills blanks with empty rows' do
+        ids = row_cache.map(&:id)
+        expect(ids).to eq(%w[1 2 3])
       end
     end
   end

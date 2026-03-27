@@ -6,11 +6,12 @@ class OOXL
     include OOXL::Util
     include Enumerable
 
-    attr_reader :columns, :data_validations, :shared_strings, :styles
+    attr_reader :shared_strings, :styles
     attr_accessor :comments, :defined_names, :name
+
     delegate :[], :each, :rows, :row, to: :@row_cache
 
-    def initialize(xml, shared_strings, options={})
+    def initialize(xml, shared_strings, options = {})
       @xml = Nokogiri.XML(xml).remove_namespaces!
       @shared_strings = shared_strings
       @comments = {}
@@ -29,22 +30,19 @@ class OOXL
     end
 
     def data_validation(cell_ref)
-      data_validations.find { |data_validation| data_validation.in_sqref_range?(cell_ref)}
+      data_validations.find { |data_validation| data_validation.in_sqref_range?(cell_ref) }
     end
 
     def column(id)
       uniformed_reference = uniform_reference(id)
-      columns.find { |column| column.id_range.include?(uniformed_reference)}
+      columns.find { |column| column.id_range.include?(uniformed_reference) }
     end
 
     def columns
-      @columns ||= begin
-        @xml.xpath('//cols/col').map do |column_node|
-          Column.load_from_node(column_node)
-        end
+      @columns ||= @xml.xpath('//cols/col').map do |column_node|
+        Column.load_from_node(column_node)
       end
     end
-
 
     # DEPRECATED: stream is no longer separate
     def stream_row(index)
@@ -54,14 +52,14 @@ class OOXL
     # test mode
     def cells_by_column(column_letter)
       rows.map do |row|
-        row.cells.find { |cell| to_column_letter(cell.id) == column_letter}
+        row.cells.find { |cell| to_column_letter(cell.id) == column_letter }
       end
     end
 
-    def last_column(row_index=1)
+    def last_column(row_index = 1)
       @last_column ||= {}
       @last_column[row_index] ||= begin
-        cells = row(row_index).try(:cells) 
+        cells = row(row_index).try(:cells)
         cells.last.column if cells.present?
       end
     end
@@ -69,7 +67,7 @@ class OOXL
     def cell(cell_id)
       column_letter, row_index = cell_id.partition(/\d+/)
       current_row = row(row_index)
-      current_row.cell(column_letter) unless current_row.nil?
+      current_row&.cell(column_letter)
     end
 
     def formula(cell_id)
@@ -86,7 +84,6 @@ class OOXL
 
     def data_validations
       @data_validations ||= begin
-
         # original validations
         dvalidations = @xml.xpath('//dataValidations/dataValidation').map do |data_validation_node|
           Sheet::DataValidation.load_from_node(data_validation_node)
@@ -111,23 +108,23 @@ class OOXL
     # formula =  data_validation('A1').formula
     # ooxl.named_range(formula)
     def cell_range(cell_ref)
-      data_validation = data_validations.find { |data_validation| data_validation.in_sqref_range?(cell_ref)}
-      if data_validation.respond_to?(:type) && data_validation.type == "list"
-        if data_validation.formula[/[\s\$\,\:]/]
-          (data_validation.formula[/\$/].present?) ? "#{name}!#{data_validation.formula}" : data_validation.formula
-        else
-          @defined_names[data_validation.formula]
-        end
+      data_validation = data_validations.find { |data_validation| data_validation.in_sqref_range?(cell_ref) }
+      return unless data_validation.respond_to?(:type) && data_validation.type == 'list'
+
+      if data_validation.formula[/[\s$,:]/]
+        data_validation.formula[/\$/].present? ? "#{name}!#{data_validation.formula}" : data_validation.formula
+      else
+        @defined_names[data_validation.formula]
       end
     end
-    alias_method :list_value_formula, :cell_range
+    alias list_value_formula cell_range
 
     def list_values_from_cell_range(cell_range)
       return [] if cell_range.blank?
 
       # cell_range values separated by comma
-      if cell_range.include?(":")
-        cell_letters = cell_range.gsub(/[\d]/, '').split(':')
+      if cell_range.include?(':')
+        cell_letters = cell_range.gsub(/\d/, '').split(':')
         start_index, end_index = cell_range[/[A-Z]{1,}\d+/] ? cell_range.gsub(/[^\d:]/, '').split(':').map(&:to_i) : [1, @row_cache.max_row_index]
         if cell_letters.uniq.size > 1
           list_values_from_rectangle(cell_letters, start_index, end_index)
@@ -139,7 +136,7 @@ class OOXL
         list_values_from_cell(cell_range)
       end
     end
-    alias_method :list_values_from_formula, :list_values_from_cell_range
+    alias list_values_from_formula list_values_from_cell_range
 
     # This will allow values from this pattern
     # 'SheetName!A1:C3'
@@ -168,6 +165,7 @@ class OOXL
       row_index = cell_ref.gsub(/[^\d:]/, '').split(':').map(&:to_i).first
       row = row(row_index)
       return if row.blank?
+
       [row[cell_ref].value]
     end
 
@@ -178,20 +176,20 @@ class OOXL
     end
 
     def self.load_from_stream(xml_stream, shared_strings)
-      self.new(xml_stream, shared_strings)
+      new(xml_stream, shared_strings)
     end
 
     private
 
     def merged_cells
-      @merged_cells ||= @xml.xpath('//mergeCells/mergeCell').map do |merged_cell|
+      @merged_cells ||= @xml.xpath('//mergeCells/mergeCell').to_h do |merged_cell|
         # <mergeCell ref="Q381:R381"/>
-        start_reference, end_reference = merged_cell.attributes["ref"].try(:value).split(':')
+        start_reference, end_reference = merged_cell.attributes['ref'].try(:value).split(':')
 
-        start_column_letter, start_index =  start_reference.partition(/\d+/)
+        start_column_letter, start_index = start_reference.partition(/\d+/)
         end_column_letter, end_index = end_reference.partition(/\d+/)
         [(start_column_letter..end_column_letter), (start_index..end_index)]
-      end.to_h
+      end
     end
   end
 end

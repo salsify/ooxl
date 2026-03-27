@@ -12,14 +12,14 @@ class OOXL
         []
       else
         # # required for fetching values
-        sheet_name = formula.gsub(/[\$\']/, '').scan(/^[^!]*/).first
-        cell_range = formula.gsub(/\$/, '').scan(/(?<=!).+/).first
+        sheet_name = formula.gsub(/[$']/, '').scan(/^[^!]*/).first
+        cell_range = formula.gsub('$', '').scan(/(?<=!).+/).first
 
         # fetch the sheet of the cell reference
         working_sheet = sheet(sheet_name)
 
         # gather values
-        list_values = working_sheet.list_values_from_cell_range(cell_range)
+        working_sheet.list_values_from_cell_range(cell_range)
       end
     end
   end

@@ -31,10 +31,11 @@ describe OOXL::Sheet do
     </worksheet>'
   end
 
-  let(:sheet) { OOXL::Sheet.new(sheet_xml, []) }
-  let(:test_formula) { 'VLOOKUP($C$5,TABLES!$A$904:$AG$910,AG5,0)'}
+  let(:sheet) { described_class.new(sheet_xml, []) }
+  let(:test_formula) { 'VLOOKUP($C$5,TABLES!$A$904:$AG$910,AG5,0)' }
+
   it 'loads sheet' do
-    expect(sheet.class).to be OOXL::Sheet
+    expect(sheet.class).to be described_class
   end
 
   it 'loads columns' do
@@ -98,4 +99,4 @@ describe OOXL::Sheet do
     expect(sheet.data_validations.size).to eq 1
     expect(sheet.data_validation('B6').class).to eq OOXL::Sheet::DataValidation
   end
- end
+end

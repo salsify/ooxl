@@ -24,17 +24,17 @@ class OOXL
       fetch_row_by_id(id)
     end
 
-    alias_method :row, :[]
+    alias row []
 
-    def each(&block)
+    def each(&)
       if @options[:padded_rows]
-        padded_rows(&block)
+        padded_rows(&)
       else
-        rows(&block)
+        rows(&)
       end
     end
 
-    def rows(&block)
+    def rows(&)
       # track yield count to know if caller broke out of loop
       rows_yielded = 0
       row_cache.each do |r|
@@ -42,9 +42,7 @@ class OOXL
         rows_yielded += 1
       end
 
-      if !all_rows_loaded? && rows_yielded == row_cache.count
-        parse_more_rows(&block)
-      end
+      parse_more_rows(&) if !all_rows_loaded? && rows_yielded == row_cache.count
 
       row_cache
     end
@@ -125,4 +123,3 @@ class OOXL
     end
   end
 end
-

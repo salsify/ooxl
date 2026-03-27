@@ -14,10 +14,10 @@ describe OOXL::Workbook do
     '
   end
 
-  let(:workbook) { OOXL::Workbook.load_from_stream(workbook_xml) }
+  let(:workbook) { described_class.load_from_stream(workbook_xml) }
 
   it 'loads workbook' do
-    expect(workbook.class).to be OOXL::Workbook
+    expect(workbook.class).to be described_class
   end
 
   it 'loads sheets' do

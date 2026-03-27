@@ -11,25 +11,24 @@ class OOXL
     end
 
     def self.load_from_stream(comment_xml)
-      comment_xml =Nokogiri.XML(comment_xml).remove_namespaces!
+      comment_xml = Nokogiri.XML(comment_xml).remove_namespaces!
 
-      comments = comment_xml.xpath("//comments/commentList/comment").map do |comment_node|
+      comments = comment_xml.xpath('//comments/commentList/comment').to_h do |comment_node|
         comment_text_node = comment_node.xpath('./text/r/t').presence || comment_node.xpath('./text/t')
 
         value = if comment_text_node.is_a?(Array)
-          comment_text_node.map { |comment_text_node| comment_text_node.text }.join('')
-        else
-          comment_text_node.text
-        end
+                  comment_text_node.map(&:text).join
+                else
+                  comment_text_node.text
+                end
 
-        id = comment_node.attributes["ref"].to_s
+        id = comment_node.attributes['ref'].to_s
         [id, value]
-      end.to_h
+      end
       new(comments)
     end
   end
 end
-
 
 # <comments>
 #    <authors>

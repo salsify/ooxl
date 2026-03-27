@@ -30,17 +30,17 @@ class OOXL
       pow = column_letter.length - 1
       result = 0
       column_letter.each_byte do |b|
-        result += 26**pow * (b - 64)
+        result += (26**pow) * (b - 64)
         pow -= 1
       end
       result
     end
 
     def node_attribute_value(node, attribute_name)
-      unless node.blank?
-        attribute = node.attributes.find { |key, attribute| key == attribute_name}
-        attribute[1].value if attribute.present?
-      end
+      return if node.blank?
+
+      attribute = node.attributes.find { |key, _attribute| key == attribute_name }
+      attribute[1].value if attribute.present?
     end
   end
 end

@@ -1,3 +1,3 @@
 class OOXL
-  VERSION = "0.0.1.5.6"
+  VERSION = "0.1.0"
 end

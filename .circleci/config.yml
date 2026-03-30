@@ -1,0 +1,47 @@
+version: 2.1
+
+workflows:
+  version: 2
+  ooxl:
+    jobs:
+      - build:
+          matrix:
+            parameters:
+              ruby_version:
+                - 3.3.8
+                - 3.4.1
+
+jobs:
+  build:
+    parameters:
+      ruby_version:
+        type: string
+    docker:
+      - image: ruby:<< parameters.ruby_version >>
+    environment:
+      CIRCLE_TEST_REPORTS: "test-results"
+    working_directory: ~/ooxl
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-gems-ruby-<< parameters.ruby_version >>-{{ checksum "ooxml_excel.gemspec" }}-{{ checksum "Gemfile" }}
+            - v1-gems-ruby-<< parameters.ruby_version >>-
+      - run:
+          name: Install Gems
+          command: |
+            bundle config set path 'vendor/bundle'
+            if ! bundle check; then
+              bundle install --jobs=4 --retry=3
+              bundle clean
+            fi
+      - save_cache:
+          key: v1-gems-ruby-<< parameters.ruby_version >>-{{ checksum "ooxml_excel.gemspec" }}-{{ checksum "Gemfile" }}
+          paths:
+            - "vendor/bundle"
+      - run:
+          name: Run Tests
+          command: |
+            bundle exec rspec --format RspecJunitFormatter --out $CIRCLE_TEST_REPORTS/rspec/junit.xml --format progress spec
+      - store_test_results:
+          path: "test-results"

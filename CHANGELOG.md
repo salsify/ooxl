@@ -24,4 +24,4 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Comment extraction
 - Padded rows and padded cells options for gap filling
 - Lazy row loading via row cache for large files
-- GitHub Actions CI for Ruby 3.0, 3.1, 3.2, 3.3
+- CircleCI for Ruby 3.3, 3.4

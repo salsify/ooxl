@@ -1,9 +1,9 @@
 # OOXL
 
 [![Gem Version](https://badge.fury.io/rb/ooxl.svg)](https://badge.fury.io/rb/ooxl)
-[![CI](https://github.com/halcjames/ooxl/actions/workflows/ci.yml/badge.svg)](https://github.com/halcjames/ooxl/actions/workflows/ci.yml)
+[![CI](https://circleci.com/gh/salsify/ooxl.svg?style=shield)](https://circleci.com/gh/salsify/ooxl)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Ruby](https://img.shields.io/badge/Ruby-3.0%2B-red.svg)](https://www.ruby-lang.org)
+[![Ruby](https://img.shields.io/badge/Ruby-3.3%2B-red.svg)](https://www.ruby-lang.org)
 
 A lightweight Ruby library for parsing Excel spreadsheets (`.xlsx`, `.xlsm`). Extract sheet data, cell values, formulas, styles, comments, data validations, and named ranges with a simple API.
 
@@ -176,7 +176,7 @@ sheet = ooxl['Sheet 1']
 sheet.comment('A1') # => comment text, or nil
 ```
 
-For full API details, see the [source documentation](https://github.com/halcjames/ooxl).
+For full API details, see the [source documentation](https://github.com/salsify/ooxl).
 
 ## Development
 
@@ -191,11 +191,15 @@ bundle exec rake spec
 bin/console
 ```
 
-CI runs automatically via GitHub Actions on push and pull requests against `master`, testing Ruby 3.0 through 3.3.
+CI runs automatically via CircleCI on push and pull requests against `master`, testing Ruby 3.3 and 3.4.
+
+## Status
+
+Tested with Ruby 3.3 and 3.4 on MRI.
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/halcjames/ooxl. See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+Bug reports and pull requests are welcome on GitHub at https://github.com/salsify/ooxl. See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ## License
 

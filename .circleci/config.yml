@@ -17,7 +17,7 @@ jobs:
       ruby_version:
         type: string
     docker:
-      - image: ruby:3.3.8
+      - image: ruby:<< parameters.ruby_version >>
     environment:
       CIRCLE_TEST_REPORTS: "test-results"
     working_directory: ~/ooxl
@@ -25,8 +25,8 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v1-gems-ruby-3.3.8-{{ checksum "ooxml_excel.gemspec" }}-{{ checksum "Gemfile" }}
-            - v1-gems-ruby-3.3.8-
+            - v1-gems-ruby-<< parameters.ruby_version >>-{{ checksum "ooxml_excel.gemspec" }}-{{ checksum "Gemfile" }}
+            - v1-gems-ruby-<< parameters.ruby_version >>-
       - run:
           name: Install Gems
           command: |
@@ -36,7 +36,7 @@ jobs:
               bundle clean
             fi
       - save_cache:
-          key: v1-gems-ruby-3.3.8-{{ checksum "ooxml_excel.gemspec" }}-{{ checksum "Gemfile" }}
+          key: v1-gems-ruby-<< parameters.ruby_version >>-{{ checksum "ooxml_excel.gemspec" }}-{{ checksum "Gemfile" }}
           paths:
             - "vendor/bundle"
       - run:

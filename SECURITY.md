@@ -6,7 +6,7 @@ If you discover a security vulnerability in OOXL, please report it responsibly.
 
 **Do not open a public GitHub issue for security vulnerabilities.**
 
-Instead, please email **bajong009@gmail.com** with:
+Instead, please email **jmones@salsify.com** with:
 
 - A description of the vulnerability
 - Steps to reproduce the issue

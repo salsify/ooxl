@@ -6,6 +6,6 @@ The full text is available at: https://www.contributor-covenant.org/version/2/1/
 
 ## Reporting
 
-Instances of behavior that violates the Code of Conduct may be reported to the project maintainer at **bajong009@gmail.com**.
+Instances of behavior that violates the Code of Conduct may be reported to the project maintainer at **jmones@salsify.com**.
 
 All reports will be reviewed and investigated promptly and fairly. The maintainer is obligated to respect the privacy and security of the reporter.

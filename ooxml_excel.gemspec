@@ -7,17 +7,17 @@ Gem::Specification.new do |spec|
   spec.name          = "ooxl"
   spec.version       = OOXL::VERSION
   spec.authors       = ["James Mones"]
-  spec.email         = ["bajong009@gmail.com"]
+  spec.email         = ["jmones@salsify.com"]
   spec.summary       = %q{Lightweight Ruby parser for Excel spreadsheets (xlsx, xlsm).}
   spec.description   = %q{Parse Excel spreadsheets with a simple API. Read cell values, formulas, styles, comments, data validations, named ranges, and merged cells from xlsx and xlsm files. Supports streaming from strings and IO objects with lazy row loading for large files.}
-  spec.homepage      = "https://github.com/halcjames/ooxl"
+  spec.homepage      = "https://github.com/salsify/ooxl"
   spec.license       = "MIT"
   spec.required_ruby_version = ">= 3.3"
 
   spec.metadata = {
-    "source_code_uri"   => "https://github.com/halcjames/ooxl",
-    "bug_tracker_uri"   => "https://github.com/halcjames/ooxl/issues",
-    "changelog_uri"     => "https://github.com/halcjames/ooxl/blob/master/CHANGELOG.md",
+    "source_code_uri"   => "https://github.com/salsify/ooxl",
+    "bug_tracker_uri"   => "https://github.com/salsify/ooxl/issues",
+    "changelog_uri"     => "https://github.com/salsify/ooxl/blob/master/CHANGELOG.md",
     "rubygems_mfa_required" => "true"
   }
 

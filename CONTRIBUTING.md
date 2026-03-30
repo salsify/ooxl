@@ -35,7 +35,7 @@ Thank you for your interest in contributing to OOXL! This document provides guid
 bundle exec rake spec
 ```
 
-All tests must pass before a pull request can be merged. CI runs the test suite against Ruby 3.0, 3.1, 3.2, and 3.3.
+All tests must pass before a pull request can be merged. CI runs the test suite against Ruby 3.3 and 3.4 via CircleCI.
 
 ## Branch and PR Conventions
 

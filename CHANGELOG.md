@@ -3,6 +3,8 @@
 ## Unreleased
 - Add `allowed_push_host` to gemspec metadata.
 - Update CircleCI config to add changelog check.
+- Rename gemspec from `ooxml_excel.gemspec` to `ooxl.gemspec`.
+- Lower required Ruby version from `>= 3.3` to `>= 3.2` to match release environment.
 
 ## 0.1.0 - 2026-03-23
 - Parse Excel spreadsheets (`.xlsx`, `.xlsm`) from file paths, strings, and IO objects.

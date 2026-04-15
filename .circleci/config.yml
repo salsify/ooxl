@@ -7,6 +7,7 @@ workflows:
           matrix:
             parameters:
               ruby_version:
+                - 3.2.7
                 - 3.3.8
                 - 3.4.1
 
@@ -24,7 +25,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v1-gems-ruby-<< parameters.ruby_version >>-{{ checksum "ooxml_excel.gemspec" }}-{{ checksum "Gemfile" }}
+            - v1-gems-ruby-<< parameters.ruby_version >>-{{ checksum "ooxl.gemspec" }}-{{ checksum "Gemfile" }}
             - v1-gems-ruby-<< parameters.ruby_version >>-
       - run:
           name: Install Gems
@@ -35,7 +36,7 @@ jobs:
               bundle clean
             fi
       - save_cache:
-          key: v1-gems-ruby-<< parameters.ruby_version >>-{{ checksum "ooxml_excel.gemspec" }}-{{ checksum "Gemfile" }}
+          key: v1-gems-ruby-<< parameters.ruby_version >>-{{ checksum "ooxl.gemspec" }}-{{ checksum "Gemfile" }}
           paths:
             - "vendor/bundle"
       - run:

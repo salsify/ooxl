@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description   = %q{Parse Excel spreadsheets with a simple API. Read cell values, formulas, styles, comments, data validations, named ranges, and merged cells from xlsx and xlsm files. Supports streaming from strings and IO objects with lazy row loading for large files.}
   spec.homepage      = "https://github.com/salsify/ooxl"
   spec.license       = "MIT"
-  spec.required_ruby_version = ">= 3.3"
+  spec.required_ruby_version = ">= 3.2"
 
   spec.metadata = {
     "source_code_uri"   => "https://github.com/salsify/ooxl",

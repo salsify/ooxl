@@ -1,6 +1,9 @@
 # Changelog
 
 ## Unreleased
+
+## 0.1.1 - 2026-04-20
+- Upgrade `rubyzip` dependency from `~> 2.0` to `~> 3.0`.
 - Add `allowed_push_host` to gemspec metadata.
 - Update CircleCI config to add changelog check.
 - Rename gemspec from `ooxml_excel.gemspec` to `ooxl.gemspec`.

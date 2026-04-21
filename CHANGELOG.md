@@ -6,6 +6,9 @@
 - Rename gemspec from `ooxml_excel.gemspec` to `ooxl.gemspec`.
 - Lower required Ruby version from `>= 3.3` to `>= 3.2` to match release environment.
 
+## 0.1.1 - 2026-04-20
+- Upgrade `rubyzip` dependency from `~> 2.0` to `~> 3.0`.
+
 ## 0.1.0 - 2026-03-23
 - Parse Excel spreadsheets (`.xlsx`, `.xlsm`) from file paths, strings, and IO objects.
 - Sheet access by name with hidden sheet filtering.
